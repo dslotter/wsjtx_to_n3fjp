@@ -1,4 +1,15 @@
 #!/usr/bin/python3
+###############################################################################
+#
+# Python adapter to connect logging output of WSJT-X to API input of N3FJP.
+# 
+# Written by Dave Slotter, <slotter+W3DJS@gmail.com>
+#
+# Amateur Radio Callsign W3DJS
+#
+# Created May 2, 2019 - Copyrighted under the GPL v3
+#
+###############################################################################
 
 import configparser
 import socket
