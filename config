@@ -1,0 +1,9 @@
+[DEFAULT]
+county = GWIN
+operator = W4FAKE
+name = John Doe
+initials = jd
+N3FJP_HOST  = 127.0.0.1
+N3FJP_PORT  = 1100
+WSJT_X_HOST = 127.0.0.1
+WSJT_X_PORT = 2333

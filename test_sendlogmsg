@@ -1,0 +1,12 @@
+# FT8
+echo "<call:5>AA8SW <gridsquare:4>EM79 <mode:3>FT8 <rst_sent:3>-13 <rst_rcvd:2>+0 <qso_date:8>20190502 <time_on:6>124524 <qso_date_off:8>20190502 <time_off:6>124654 <band:3>40m <freq:8>7.048500 <station_callsign:5>W4FAKE <my_gridsquare:6>EM83bx <tx_pwr:2>50 <comment:14>FT4  Sent: -13 <name:3>Don <operator:4>W4GR <STATE:4>Recv <eor>" | nc -q 1 -u 127.0.0.1 2333
+
+# JS8Call
+echo "<call:6>W4TEST <gridsquare:4>EM83 <mode:4>MFSK <submode:3>JS8 <rst_sent:3>-10 <rst_rcvd:3>-11 <qso_date:8>20190502 <time_on:6>131643 <qso_date_off:8>20190502 <time_off:6>131643 <band:3>40m <freq:8>7.075350 <station_callsign:5>W4FAKE <my_gridsquare:6>EM83BX <comment:18>This is a JS8 call <name:9>Test User <eor>" | nc -q 1 -u 127.0.0.1 2333
+
+# FT4
+echo "<call:4>KR0B <gridsquare:4>EN36 <mode:3>FT4 <rst_sent:3>-13 <rst_rcvd:3>-05 <qso_date:8>20190502 <time_on:6>033801 <qso_date_off:8>20190502 <time_off:6>033801 <band:3>40m <freq:8>7.048500 <station_callsign:5>W4FAKE <my_gridsquare:6>EM83bx <tx_pwr:2>50 <comment:3>FT4 <name:9>RANDALL W <eor>" | nc -q 1 -u 127.0.0.1 2333
+
+echo "<call:5>W4ABC <gridsquare:4>EM90 <mode:3>FT4 <rst_sent:3>-10 <rst_rcvd:3>-11 <qso_date:8>20190502 <time_on:6>030746 <qso_date_off:8>20190502 <time_off:6>030746 <band:3>40m <freq:8>7.048500 <station_callsign:5>W4FAKE <my_gridsquare:6>EM83bx <tx_pwr:3>100 <comment:3>FT4 <name:5>Frank <operator:5>W4FAKE <STATE:0> <eor>" | nc -q 1 -u 127.0.0.1 2333
+
+echo "<call:4>WABC <gridsquare:4>EM83 <mode:3>FT4 <rst_sent:0> <rst_rcvd:0> <qso_date:8>20190502 <time_on:6>003509 <qso_date_off:8>20190502 <time_off:6>003509 <band:3>40m <freq:8>7.048500 <station_callsign:5>W4FAKE <my_gridsquare:6>EM83bx <comment:3>FT4 <name:7>NO NAME <eor>" | nc -q 1 -u 127.0.0.1 2333
