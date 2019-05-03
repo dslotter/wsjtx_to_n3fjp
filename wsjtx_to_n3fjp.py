@@ -107,7 +107,7 @@ class wsjtx_to_n3fjp:
             attr_len = int(strbuf[end + 2:pos + 1])
 #            print ( "Length: %s" % attr_len )
             strbuf = str(self.recv_buffer)
-            attr = strbuf[end + 4:end + 4 + int(attr_len)]
+            attr = strbuf[pos + 2:end + 4 + int(attr_len)]
             print ( "%s: %s" % (token, attr) )
 
             if token == 'call':
