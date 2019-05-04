@@ -32,7 +32,7 @@ class wsjtx_to_n3fjp:
     band = ""
     mode = ""
     frequency = 0
-    power = 0
+    power = "0"
     rst_r = 0
     rst_s = 0
     grid_r = ""
@@ -49,6 +49,9 @@ class wsjtx_to_n3fjp:
         self.set_name_s(self.config['DEFAULT']['name'])
         self.set_initials(self.config['DEFAULT']['initials'])
         self.set_county(self.config['DEFAULT']['county'])
+        self.reset_vals()
+
+    def reset_vals(self):
         self.set_name_r("")
         self.set_call("")
         self.set_date("")
@@ -86,9 +89,10 @@ class wsjtx_to_n3fjp:
             'operator' ]:
             strbuf = str(self.recv_buffer)
             search_token = "<" + token + ":"
-            start = strbuf.find(search_token)
+            start = strbuf.lower().find(search_token)
             if start == -1:
-              break
+#              print("Didn't find token: %s" % search_token)
+              continue
             end = strbuf.find(':',start)-1
             if end == -1:
               break
@@ -107,7 +111,8 @@ class wsjtx_to_n3fjp:
             attr_len = int(strbuf[end + 2:pos + 1])
 #            print ( "Length: %s" % attr_len )
             strbuf = str(self.recv_buffer)
-            attr = strbuf[pos + 2:end + 4 + int(attr_len)]
+#            print ( "Pos+2: %d End+4: %d" % ( pos+2 , end+4))
+            attr = strbuf[pos + 2:pos+2 + int(attr_len)]
             print ( "%s: %s" % (token, attr) )
 
             if token == 'call':
@@ -135,7 +140,7 @@ class wsjtx_to_n3fjp:
 #                print (time)
                 self.set_time_off(time)
             elif token == 'band':
-                end = attr.find('m')
+                end = attr.lower().find('m')
                 band = attr[:end]
                 self.set_band(band)
             elif token == 'freq':
@@ -153,6 +158,10 @@ class wsjtx_to_n3fjp:
             elif token == 'operator':
                 self.set_operator(attr)
 
+            # Special handling for FLDigi
+            if self.mode == 'PSK':
+                self.set_rst_s('599')
+                self.set_rst_r('599')
 
     def set_computer_name(self):
         self.computer_name = socket.gethostname()
@@ -230,11 +239,14 @@ class wsjtx_to_n3fjp:
             'MSK144': 2,
             'WSPR':   2,
             'MFSK':   2,
+            'PSK':    2,
             'PSK31':  2
         } 
         mult = mult * switcher.get(self.mode, 1)
 
-        if self.power <= 5:
+        if self.power == 0:
+            mult = mult * 1
+        elif self.power <= 5:
             mult = mult * 5
         elif self.power <= 150:
             mult = mult * 2
@@ -299,4 +311,5 @@ if __name__ == "__main__":
         w.parse_adif()
         w.set_points(w.get_points())
         w.log_new_qso()
+        w.reset_vals()
     w.sock.close ()
