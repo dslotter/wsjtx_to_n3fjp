@@ -30,3 +30,9 @@ Once the config file has been edited, you may launch wsjtx_to_n3fjp from the com
 dave@Moonquake:~/projects/python/wsjtx_to_n3fjp$ ./wsjtx_to_n3fjp.py 
 Waiting for new log entry...
 ```
+
+If you find this software useful, I would appreciate it if you sent me a QSL card. (I love getting those.) You may find my mailing address in my QRZ profile.
+
+73!
+
+[W3DJS](https://www.qrz.com/db/W3DJS)
