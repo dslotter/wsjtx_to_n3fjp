@@ -24,6 +24,8 @@ class wsjtx_to_n3fjp:
     name_s = ""
     initials = ""
     county = ""
+    arrl_class = ""
+    arrl_section = ""
     name_r = ""
     call = ""
     date = ""
@@ -49,6 +51,8 @@ class wsjtx_to_n3fjp:
         self.set_name_s(self.config['DEFAULT']['name'])
         self.set_initials(self.config['DEFAULT']['initials'])
         self.set_county(self.config['DEFAULT']['county'])
+        self.set_arrl_class(self.config['DEFAULT']['class'])
+        self.set_arrl_section(self.config['DEFAULT']['section'])
         self.reset_vals()
 
     def reset_vals(self):
@@ -178,6 +182,12 @@ class wsjtx_to_n3fjp:
     def set_county(self, county):
         self.county = county
 
+    def set_arrl_class(self, arrl_class):
+        self.arrl_class = arrl_class
+
+    def set_arrl_section(self, arrl_section):
+        self.arrl_section = arrl_section
+
     def set_name_r(self, name_r):
         self.name_r = name_r
 
@@ -293,7 +303,7 @@ class wsjtx_to_n3fjp:
             sys.exit()
 
     def log_new_qso(self):
-        command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points)
+        command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class, self.arrl_section)
         print (command)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'], int(self.config['DEFAULT']['N3FJP_PORT'])))
