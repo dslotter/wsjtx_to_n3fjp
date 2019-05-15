@@ -298,24 +298,27 @@ class wsjtx_to_n3fjp:
             self.recv_buffer = sock.recvfrom(1024)
             print ("Received log message:\n\n", self.recv_buffer)
         except KeyboardInterrupt:
-            print ("User cancelled.")
+            sys.stderr.write("User cancelled.")
             sock.close ()
-            sys.exit()
+            sys.exit(0)
+        except socket.error as msg:
+            sys.stderr.write("[ERROR] %s (is another copy of wsjtx_to_n3fjp running?)\n" % msg)
+            sys.exit(2)
 
     def log_new_qso(self):
         command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class, self.arrl_section)
         print (command)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = self.sock.connect_ex((self.config['DEFAULT']['N3FJP_HOST'], int(self.config['DEFAULT']['N3FJP_PORT'])))
-        if result == 0:
+        try:
+            self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'], int(self.config['DEFAULT']['N3FJP_PORT'])))
             print ("Sending log entry...")
             self.tcp_send_string(command)
             time.sleep(.2)
             command = "<CMD><CHECKLOG></CMD>\r\n"
             print ("Sending log refresh...")
             self.tcp_send_string(command)
-        else:
-            print ("Failed to connect to N3FJP. Error = %d" % result)
+        except socket.error as msg:
+            sys.stderr.write("[ERROR] Failed to connect to N3FJP: %s\n" % msg)
 
 if __name__ == "__main__":
     w = wsjtx_to_n3fjp()
