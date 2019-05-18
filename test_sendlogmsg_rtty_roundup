@@ -1,0 +1,2 @@
+# Test RTTY Roundup
+echo '<call:5>K4VBM <gridsquare:4>EM73 <mode:3>FT8 <rst_sent:3>559 <rst_rcvd:3>549 <qso_date:8>20190518 <time_on:6>001130 <qso_date_off:8>20190518 <time_off:6>001230 <band:3>80m <freq:8>3.580300 <station_callsign:5>W3DJS <my_gridsquare:6>EM83bx <tx_pwr:2>50 <STATE:2>GA <eor>' | nc -q 1 -u 127.0.0.1 2333

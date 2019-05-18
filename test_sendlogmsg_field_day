@@ -1,0 +1,2 @@
+# Test Field Day Exchange
+echo '<call:5>K4VBM <gridsquare:4>EM73 <mode:3>FT8 <rst_sent:2>8A <rst_rcvd:2>2B <qso_date:8>20190517 <time_on:6>234930 <qso_date_off:8>20190517 <time_off:6>235030 <band:3>80m <freq:8>3.580300 <station_callsign:5>W3DJS <my_gridsquare:6>EM83bx <tx_pwr:2>50 <comment:23>FT8  Sent: 8A  Rcvd: 2B <STATE:2>GA <eor>' | nc -q 1 -u 127.0.0.1 2333
