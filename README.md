@@ -12,6 +12,10 @@ county = GWIN
 operator = W4FAKE
 name = John Doe
 initials = jd
+# Contest Field
+# FD = Field Day, RTTY = RTTY Roundup
+# <BLANK> = No contest
+contest =
 class =
 section =
 N3FJP_HOST  = 127.0.0.1
@@ -19,7 +23,7 @@ N3FJP_PORT  = 1100
 WSJT_X_HOST = 127.0.0.1
 WSJT_X_PORT = 2333
 ```
-operator is your callsign. name and initials are the name and initials of the local station operator. county is the abbreviation for the county from which you are working. Class and section are for ARRL Field Day usage. In this example, Gwinnet County, Georgia is "GWIN".
+operator is your callsign. name and initials are the name and initials of the local station operator. county is the abbreviation for the county from which you are working. Contest, Class and section are for ARRL Field Day or RTTY Roundup usage. In this example, Gwinnet County, Georgia is "GWIN".
 
 The values, N3FJP_HOST and N3FJP_PORT are default values for a locally-running copy of N3FJP. You may change these values for non-standard ports, or if N3FJP is running on a remote computer.
 
