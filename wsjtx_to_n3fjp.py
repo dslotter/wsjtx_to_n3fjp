@@ -24,8 +24,10 @@ class wsjtx_to_n3fjp:
     name_s = ""
     initials = ""
     county = ""
-    arrl_class = ""
-    arrl_section = ""
+    arrl_class_r = ""
+    arrl_class_s = ""
+    arrl_section_r = ""
+    arrl_section_s = ""
     name_r = ""
     call = ""
     date = ""
@@ -41,6 +43,7 @@ class wsjtx_to_n3fjp:
     grid_s = ""
     comments = ""
     points = 0
+    contest = ""
     recv_buffer = ""
 
     def __init__(self):
@@ -51,13 +54,16 @@ class wsjtx_to_n3fjp:
         self.set_name_s(self.config['DEFAULT']['name'])
         self.set_initials(self.config['DEFAULT']['initials'])
         self.set_county(self.config['DEFAULT']['county'])
-        self.set_arrl_class(self.config['DEFAULT']['class'])
-        self.set_arrl_section(self.config['DEFAULT']['section'])
+        self.set_arrl_class_s(self.config['DEFAULT']['class'])
+        self.set_arrl_section_s(self.config['DEFAULT']['section'])
+        self.set_contest(self.config['DEFAULT']['contest'])
         self.reset_vals()
 
     def reset_vals(self):
         self.set_name_r("")
         self.set_call("")
+        self.set_arrl_class_r("")
+        self.set_arrl_section_r("")
         self.set_date("")
         self.set_time_on("")
         self.set_time_off("")
@@ -73,6 +79,7 @@ class wsjtx_to_n3fjp:
         self.set_points(self.get_points())
 
     def parse_adif(self):
+        print ("\nParsing log entry from WSJT-X...\n")
         for token in [
             'call',
             'gridsquare',
@@ -90,7 +97,10 @@ class wsjtx_to_n3fjp:
             'tx_pwr',
             'comment',
             'name',
-            'operator' ]:
+            'operator',
+            'stx',
+            'srx',
+            'state' ]:
             strbuf = str(self.recv_buffer)
             search_token = "<" + token + ":"
             start = strbuf.lower().find(search_token)
@@ -111,7 +121,6 @@ class wsjtx_to_n3fjp:
                     bFoundNum = False
 
 #            print ( "Start: %d  End: %d" % (end+2, pos) )
-
             attr_len = int(strbuf[end + 2:pos + 1])
 #            print ( "Length: %s" % attr_len )
             strbuf = str(self.recv_buffer)
@@ -122,13 +131,19 @@ class wsjtx_to_n3fjp:
             if token == 'call':
                 self.set_call(attr)
             elif token == 'gridsquare':
-                self.set_grid_s(attr)
+                self.set_grid_r(attr)
             elif token == 'mode':
                 self.set_mode(attr)
             elif token == 'rst_sent':
-                self.set_rst_s(attr)
+                if self.contest == 'FD':
+                    self.set_arrl_class_s(attr)
+                else:
+                    self.set_rst_s(attr)
             elif token == 'rst_rcvd':
-                self.set_rst_r(attr)
+                if self.contest == 'FD':
+                    self.set_arrl_class_r(attr)
+                else:
+                    self.set_rst_r(attr)
             elif token == 'qso_date':
                 date = attr[0:4] + '/' + attr[4:6] + '/' + attr[6:8]
 #                print (date)
@@ -161,6 +176,8 @@ class wsjtx_to_n3fjp:
                 self.set_name_r(attr)
             elif token == 'operator':
                 self.set_operator(attr)
+            elif token == 'state':
+                self.set_arrl_section_r(attr)
 
             # Special handling for FLDigi
             if self.mode == 'PSK':
@@ -182,11 +199,20 @@ class wsjtx_to_n3fjp:
     def set_county(self, county):
         self.county = county
 
-    def set_arrl_class(self, arrl_class):
-        self.arrl_class = arrl_class
+    def set_arrl_class_r(self, arrl_class_r):
+        self.arrl_class_r = arrl_class_r
 
-    def set_arrl_section(self, arrl_section):
-        self.arrl_section = arrl_section
+    def set_arrl_class_s(self, arrl_class_s):
+        self.arrl_class_s = arrl_class_s
+
+    def set_arrl_section_r(self, arrl_section_r):
+        self.arrl_section_r = arrl_section_r
+
+    def set_arrl_section_s(self, arrl_section_s):
+        self.arrl_section_s = arrl_section_s
+
+    def set_contest(self, contest):
+        self.contest = contest
 
     def set_name_r(self, name_r):
         self.name_r = name_r
@@ -306,12 +332,15 @@ class wsjtx_to_n3fjp:
             sys.exit(2)
 
     def log_new_qso(self):
-        command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class, self.arrl_section)
+        if self.contest == 'FD':
+            command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
+        else:
+            command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
+        print ("\nSending log entry to N3FJP...")
         print (command)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'], int(self.config['DEFAULT']['N3FJP_PORT'])))
-            print ("Sending log entry...")
             self.tcp_send_string(command)
             time.sleep(.2)
             command = "<CMD><CHECKLOG></CMD>\r\n"

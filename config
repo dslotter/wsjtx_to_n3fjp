@@ -3,6 +3,10 @@ county = GWIN
 operator = W4FAKE
 name = John Doe
 initials = jd
+# Contest Field
+# FD = Field Day, RTTY = RTTY Roundup
+# <BLANK> = No contest
+contest =
 class =
 section =
 N3FJP_HOST  = 127.0.0.1
