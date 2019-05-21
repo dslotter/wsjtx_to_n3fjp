@@ -121,15 +121,11 @@ class WsjtxToN3fjp:
 #                print (date)
                 self.date = date
             elif token == 'time_on':
-                time = attr[0:2] + ':' + attr[2:4]
-#                print (time)
-                self.time_on = time
+                self.time_on = attr[0:2] + ':' + attr[2:4]
 #            elif token == 'qso_date_off':
 #                self.date_off = attr
             elif token == 'time_off':
-                time = attr[0:2] + ':' + attr[2:4]
-#                print (time)
-                self.time_off = time
+                self.time_off = attr[0:2] + ':' + attr[2:4]
             elif token == 'band':
                 end = attr.lower().find('m')
                 band = attr[:end]
