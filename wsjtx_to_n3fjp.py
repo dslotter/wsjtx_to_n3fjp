@@ -23,33 +23,33 @@ class wsjtx_to_n3fjp:
         self.config = configparser.ConfigParser()
         self.config.read('config')
         self.set_computer_name()
-        self.set_operator(self.config['DEFAULT']['operator'])
-        self.set_name_s(self.config['DEFAULT']['name'])
-        self.set_initials(self.config['DEFAULT']['initials'])
-        self.set_county(self.config['DEFAULT']['county'])
-        self.set_arrl_class_s(self.config['DEFAULT']['class'])
-        self.set_arrl_section_s(self.config['DEFAULT']['section'])
-        self.set_contest(self.config['DEFAULT']['contest'])
+        self.operator = self.config['DEFAULT']['operator']
+        self.name_s = self.config['DEFAULT']['name']
+        self.initials = self.config['DEFAULT']['initials']
+        self.county = self.config['DEFAULT']['county']
+        self.arrl_class_s = self.config['DEFAULT']['class']
+        self.arrl_section_s = self.config['DEFAULT']['section']
+        self.contest = self.config['DEFAULT']['contest']
         self.reset_vals()
 
     def reset_vals(self):
-        self.set_name_r("")
-        self.set_call("")
-        self.set_arrl_class_r("")
-        self.set_arrl_section_r("")
-        self.set_date("")
-        self.set_time_on("")
-        self.set_time_off("")
-        self.set_band("")
-        self.set_mode("")
-        self.set_frequency("")
-        self.set_power("0")
-        self.set_rst_r("")
-        self.set_rst_s("")
-        self.set_grid_r("")
-        self.set_grid_s("")
-        self.set_comments("")
-        self.set_points(self.get_points())
+        self.name_r = ""
+        self.call = ""
+        self.arrl_class_r = ""
+        self.arrl_section_r = ""
+        self.date = ""
+        self.time_on = ""
+        self.time_off = ""
+        self.band = ""
+        self.mode = ""
+        self.frequency = ""
+        self.power = "0"
+        self.rst_r = ""
+        self.rst_s = ""
+        self.grid_r = ""
+        self.grid_s = ""
+        self.comments = ""
+        self.points = self.get_points()
 
     def parse_adif(self):
         print("\nParsing log entry from WSJT-X...\n")
@@ -101,135 +101,63 @@ class wsjtx_to_n3fjp:
             print("%s: %s" % (token, attr))
 
             if token == 'call':
-                self.set_call(attr)
+                self.call = attr
             elif token == 'gridsquare':
-                self.set_grid_r(attr)
+                self.grid_r = attr
             elif token == 'mode':
-                self.set_mode(attr)
+                self.mode = attr
             elif token == 'rst_sent':
                 if self.contest == 'FD':
-                    self.set_arrl_class_s(attr)
+                    self.arrl_class_s = attr
                 else:
-                    self.set_rst_s(attr)
+                    self.rst_s = attr
             elif token == 'rst_rcvd':
                 if self.contest == 'FD':
-                    self.set_arrl_class_r(attr)
+                    self.arrl_class_r = attr
                 else:
-                    self.set_rst_r(attr)
+                    self.rst_r = attr
             elif token == 'qso_date':
                 date = attr[0:4] + '/' + attr[4:6] + '/' + attr[6:8]
 #                print (date)
-                self.set_date(date)
+                self.date = date
             elif token == 'time_on':
                 time = attr[0:2] + ':' + attr[2:4]
 #                print (time)
-                self.set_time_on(time)
+                self.time_on = time
 #            elif token == 'qso_date_off':
-#                self.set_date_off(attr)
+#                self.date_off = attr
             elif token == 'time_off':
                 time = attr[0:2] + ':' + attr[2:4]
 #                print (time)
-                self.set_time_off(time)
+                self.time_off = time
             elif token == 'band':
                 end = attr.lower().find('m')
                 band = attr[:end]
-                self.set_band(band)
+                self.band = band
             elif token == 'freq':
-                self.set_frequency(attr)
+                self.frequency = attr
             elif token == 'station_callsign':
-                self.set_operator(attr)
+                self.operator = attr
             elif token == 'my_gridsquare':
-                self.set_grid_s(attr)
+                self.grid_s = attr
             elif token == 'tx_pwr':
-                self.set_power(attr)
+                self.power = attr
             elif token == 'comment':
-                self.set_comments(attr)
+                self.comments = attr
             elif token == 'name':
-                self.set_name_r(attr)
+                self.name_r = attr
             elif token == 'operator':
-                self.set_operator(attr)
+                self.operator = attr
             elif token == 'state':
-                self.set_arrl_section_r(attr)
+                self.arrl_section_r = attr
 
             # Special handling for FLDigi
             if self.mode == 'PSK':
-                self.set_rst_s('599')
-                self.set_rst_r('599')
+                self.rst_s = '599'
+                self.rst_r = '599'
 
     def set_computer_name(self):
         self.computer_name = socket.gethostname()
-
-    def set_operator(self, operator):
-        self.operator = operator
-
-    def set_name_s(self, name_s):
-        self.name_s = name_s
-
-    def set_initials(self, initials):
-        self.initials = initials
-
-    def set_county(self, county):
-        self.county = county
-
-    def set_arrl_class_r(self, arrl_class_r):
-        self.arrl_class_r = arrl_class_r
-
-    def set_arrl_class_s(self, arrl_class_s):
-        self.arrl_class_s = arrl_class_s
-
-    def set_arrl_section_r(self, arrl_section_r):
-        self.arrl_section_r = arrl_section_r
-
-    def set_arrl_section_s(self, arrl_section_s):
-        self.arrl_section_s = arrl_section_s
-
-    def set_contest(self, contest):
-        self.contest = contest
-
-    def set_name_r(self, name_r):
-        self.name_r = name_r
-
-    def set_call(self, call_s):
-        self.call = call_s
-
-    def set_date(self, date):
-        self.date = date
-
-    def set_time_on(self, time_on):
-        self.time_on = time_on
-
-    def set_time_off(self, time_off):
-        self.time_off = time_off
-
-    def set_band(self, band):
-        self.band = band
-
-    def set_mode(self, mode):
-        self.mode = mode
-
-    def set_frequency(self, frequency):
-        self.frequency = frequency
-
-    def set_power(self, power):
-        self.power = int(power)
-
-    def set_rst_r(self, rst_r):
-        self.rst_r = rst_r
-
-    def set_rst_s(self, rst_s):
-        self.rst_s = rst_s
-
-    def set_grid_r(self, grid_r):
-        self.grid_r = grid_r
-
-    def set_grid_s(self, grid_s):
-        self.grid_s = grid_s
-
-    def set_comments(self, comments):
-        self.comments = comments
-
-    def set_points(self, points):
-        self.points = points
 
     def get_points(self):
         mult = 1
@@ -332,7 +260,7 @@ if __name__ == "__main__":
     while True:
         w.udp_recv_string()
         w.parse_adif()
-        w.set_points(w.get_points())
+        w.points = w.get_points()
         w.log_new_qso()
         w.reset_vals()
     w.sock.close()
