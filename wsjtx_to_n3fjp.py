@@ -85,12 +85,12 @@ class WsjtxToN3fjp:
                 break
 #            print ( "Pos: %d End: %d Str: %s" % ( start , end, strbuf[start:end+1]) )
             pos = end + 2
-            bFoundNum = True
-            while bFoundNum:
+            b_found_num = True
+            while b_found_num:
                 if strbuf[pos + 1].isdigit():
                     pos = pos + 1
                 else:
-                    bFoundNum = False
+                    b_found_num = False
 
 #            print ( "Start: %d  End: %d" % (end+2, pos) )
             attr_len = int(strbuf[end + 2:pos + 1])
@@ -194,26 +194,26 @@ class WsjtxToN3fjp:
 
     def tcp_send_string(self, str):
         # print ("Length to send: %d" % len(str) )
-        totalSent = 0
-        while totalSent < len(str):
+        total_sent = 0
+        while total_sent < len(str):
             # print ("Sending...")
-            bytesSent = self.sock.send(str.encode())
-            if bytesSent == 0:
+            bytes_sent = self.sock.send(str.encode())
+            if bytes_sent == 0:
                 raise RuntimeError("socket connection broken")
-            totalSent = totalSent + bytesSent
+            total_sent = total_sent + bytes_sent
 
     def tcp_recv_string(self):
         chunks = []
-        totalRecv = 0
-        bFinished = 0
-        while bFinished == 0:
+        total_recv = 0
+        b_finished = 0
+        while b_finished == 0:
             print("Receiving...")
             chunk = self.sock.recvfrom(1024)
             print("Received: %s" % chunk)
             if chunk == b'':
                 raise RuntimeError("socket connection broken")
             chunks.append(chunk)
-            totalRecv = totalRecv + len(chunk)
+            total_recv = total_recv + len(chunk)
         return b''.join(chunks)
 
     def udp_recv_string(self):
