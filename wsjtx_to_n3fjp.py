@@ -18,7 +18,6 @@ import time
 
 
 class WsjtxToN3fjp:
-
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read('config')
@@ -54,26 +53,11 @@ class WsjtxToN3fjp:
     def parse_adif(self):
         print("\nParsing log entry from WSJT-X...\n")
         for token in [
-            'call',
-            'gridsquare',
-            'mode',
-            'rst_sent',
-            'rst_rcvd',
-            'qso_date',
-            'time_on',
-            'qso_date_off',
-            'time_off',
-            'band',
-            'freq',
-            'station_callsign',
-            'my_gridsquare',
-            'tx_pwr',
-            'comment',
-            'name',
-            'operator',
-            'stx',
-            'srx',
-                'state']:
+                'call', 'gridsquare', 'mode', 'rst_sent', 'rst_rcvd',
+                'qso_date', 'time_on', 'qso_date_off', 'time_off', 'band',
+                'freq', 'station_callsign', 'my_gridsquare', 'tx_pwr',
+                'comment', 'name', 'operator', 'stx', 'srx', 'state'
+        ]:
             strbuf = str(self.recv_buffer)
             search_token = "<" + token + ":"
             start = strbuf.lower().find(search_token)
@@ -94,9 +78,9 @@ class WsjtxToN3fjp:
 
 #            print ( "Start: %d  End: %d" % (end+2, pos) )
             attr_len = int(strbuf[end + 2:pos + 1])
-#            print ( "Length: %s" % attr_len )
+            #            print ( "Length: %s" % attr_len )
             strbuf = str(self.recv_buffer)
-#            print ( "Pos+2: %d End+4: %d" % ( pos+2 , end+4))
+            #            print ( "Pos+2: %d End+4: %d" % ( pos+2 , end+4))
             attr = strbuf[pos + 2:pos + 2 + int(attr_len)]
             print("%s: %s" % (token, attr))
 
@@ -118,10 +102,12 @@ class WsjtxToN3fjp:
                     self.rst_r = attr
             elif token == 'qso_date':
                 date = attr[0:4] + '/' + attr[4:6] + '/' + attr[6:8]
-#                print (date)
+                #                print (date)
                 self.date = date
             elif token == 'time_on':
                 self.time_on = attr[0:2] + ':' + attr[2:4]
+
+
 #            elif token == 'qso_date_off':
 #                self.date_off = attr
             elif token == 'time_off':
@@ -160,20 +146,20 @@ class WsjtxToN3fjp:
         power = int(self.power)
 
         switcher = {
-            'FT4':    2,
-            'FT8':    2,
-            'DATA':   2,
-            'RTTY':   2,
-            'JT4':    2,
-            'JT9':    2,
-            'JT65':   2,
-            'QRA64':  2,
-            'ISCAT':  2,
+            'FT4': 2,
+            'FT8': 2,
+            'DATA': 2,
+            'RTTY': 2,
+            'JT4': 2,
+            'JT9': 2,
+            'JT65': 2,
+            'QRA64': 2,
+            'ISCAT': 2,
             'MSK144': 2,
-            'WSPR':   2,
-            'MFSK':   2,
-            'PSK':    2,
-            'PSK31':  2
+            'WSPR': 2,
+            'MFSK': 2,
+            'PSK': 2,
+            'PSK31': 2
         }
         mult = mult * switcher.get(self.mode, 1)
 
@@ -216,8 +202,8 @@ class WsjtxToN3fjp:
         try:
             self.recv_buffer = ""
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.bind((self.config['DEFAULT']['WSJT_X_HOST'], int(
-                self.config['DEFAULT']['WSJT_X_PORT'])))
+            sock.bind((self.config['DEFAULT']['WSJT_X_HOST'],
+                       int(self.config['DEFAULT']['WSJT_X_PORT'])))
             print("Waiting for new log entry...")
             self.recv_buffer = sock.recvfrom(1024)
             print("Received log message:\n\n", self.recv_buffer)
@@ -227,22 +213,32 @@ class WsjtxToN3fjp:
             sys.exit(0)
         except socket.error as msg:
             sys.stderr.write(
-                "[ERROR] %s (is another copy of wsjtx_to_n3fjp running?)\n" % msg)
+                "[ERROR] %s (is another copy of wsjtx_to_n3fjp running?)\n" %
+                msg)
             sys.exit(2)
 
     def log_new_qso(self):
         if self.contest == 'FD':
             command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (
-                self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
+                self.computer_name, self.operator, self.name_s, self.initials,
+                self.county, self.call, self.name_r, self.date, self.time_on,
+                self.time_off, self.band, self.mode, self.frequency,
+                self.power, self.grid_r, self.grid_s, self.comments,
+                self.points, self.arrl_class_r, self.arrl_section_r)
         else:
             command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (
-                self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
+                self.computer_name, self.operator, self.name_s, self.initials,
+                self.county, self.call, self.name_r, self.date, self.time_on,
+                self.time_off, self.band, self.mode, self.frequency,
+                self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s,
+                self.comments, self.points, self.arrl_class_r,
+                self.arrl_section_r)
         print("\nSending log entry to N3FJP...")
         print(command)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'], int(
-                self.config['DEFAULT']['N3FJP_PORT'])))
+            self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'],
+                               int(self.config['DEFAULT']['N3FJP_PORT'])))
             self.tcp_send_string(command)
             time.sleep(.2)
             command = "<CMD><CHECKLOG></CMD>\r\n"
@@ -250,7 +246,6 @@ class WsjtxToN3fjp:
             self.tcp_send_string(command)
         except socket.error as msg:
             sys.stderr.write("[ERROR] Failed to connect to N3FJP: %s\n" % msg)
-
 
 if __name__ == "__main__":
     w = WsjtxToN3fjp()
