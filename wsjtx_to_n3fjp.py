@@ -115,8 +115,8 @@ class wsjtx_to_n3fjp:
             pos = end + 2
             num_begin = strbuf[pos]
             bFoundNum = True
-            while bFoundNum == True:
-                if strbuf[pos + 1].isdigit() == True:
+            while bFoundNum:
+                if strbuf[pos + 1].isdigit():
                     pos = pos + 1
                 else:
                     bFoundNum = False
