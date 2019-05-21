@@ -188,12 +188,12 @@ class WsjtxToN3fjp:
 
         return mult
 
-    def tcp_send_string(self, str):
-        # print ("Length to send: %d" % len(str) )
+    def tcp_send_string(self, payload):
+        # print ("Length to send: %d" % len(payload) )
         total_sent = 0
-        while total_sent < len(str):
+        while total_sent < len(payload):
             # print ("Sending...")
-            bytes_sent = self.sock.send(str.encode())
+            bytes_sent = self.sock.send(payload.encode())
             if bytes_sent == 0:
                 raise RuntimeError("socket connection broken")
             total_sent = total_sent + bytes_sent
