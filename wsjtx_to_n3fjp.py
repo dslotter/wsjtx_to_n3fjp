@@ -17,7 +17,7 @@ import sys
 import time
 
 
-class wsjtx_to_n3fjp:
+class WsjtxToN3fjp:
 
     def __init__(self):
         self.config = configparser.ConfigParser()
@@ -257,7 +257,7 @@ class wsjtx_to_n3fjp:
 
 
 if __name__ == "__main__":
-    w = wsjtx_to_n3fjp()
+    w = WsjtxToN3fjp()
     while True:
         w.udp_recv_string()
         w.parse_adif()
