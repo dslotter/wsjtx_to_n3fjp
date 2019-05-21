@@ -19,34 +19,6 @@ import time
 
 class wsjtx_to_n3fjp:
 
-    config = ""
-    computer_name = ""
-    operator = ""
-    name_s = ""
-    initials = ""
-    county = ""
-    arrl_class_r = ""
-    arrl_class_s = ""
-    arrl_section_r = ""
-    arrl_section_s = ""
-    name_r = ""
-    call = ""
-    date = ""
-    time_on = ""
-    time_off = ""
-    band = ""
-    mode = ""
-    frequency = 0
-    power = "0"
-    rst_r = 0
-    rst_s = 0
-    grid_r = ""
-    grid_s = ""
-    comments = ""
-    points = 0
-    contest = ""
-    recv_buffer = ""
-
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read('config')
