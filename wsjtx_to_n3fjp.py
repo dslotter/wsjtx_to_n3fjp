@@ -2,7 +2,7 @@
 ###############################################################################
 #
 # Python adapter to connect logging output of WSJT-X to API input of N3FJP.
-# 
+#
 # Written by Dave Slotter, <slotter+W3DJS@gmail.com>
 #
 # Amateur Radio Callsign W3DJS
@@ -15,6 +15,7 @@ import configparser
 import socket
 import sys
 import time
+
 
 class wsjtx_to_n3fjp:
 
@@ -79,7 +80,7 @@ class wsjtx_to_n3fjp:
         self.set_points(self.get_points())
 
     def parse_adif(self):
-        print ("\nParsing log entry from WSJT-X...\n")
+        print("\nParsing log entry from WSJT-X...\n")
         for token in [
             'call',
             'gridsquare',
@@ -100,16 +101,16 @@ class wsjtx_to_n3fjp:
             'operator',
             'stx',
             'srx',
-            'state' ]:
+                'state']:
             strbuf = str(self.recv_buffer)
             search_token = "<" + token + ":"
             start = strbuf.lower().find(search_token)
             if start == -1:
-#              print("Didn't find token: %s" % search_token)
-              continue
-            end = strbuf.find(':',start)-1
+                #              print("Didn't find token: %s" % search_token)
+                continue
+            end = strbuf.find(':', start) - 1
             if end == -1:
-              break
+                break
 #            print ( "Pos: %d End: %d Str: %s" % ( start , end, strbuf[start:end+1]) )
             pos = end + 2
             num_begin = strbuf[pos]
@@ -125,8 +126,8 @@ class wsjtx_to_n3fjp:
 #            print ( "Length: %s" % attr_len )
             strbuf = str(self.recv_buffer)
 #            print ( "Pos+2: %d End+4: %d" % ( pos+2 , end+4))
-            attr = strbuf[pos + 2:pos+2 + int(attr_len)]
-            print ( "%s: %s" % (token, attr) )
+            attr = strbuf[pos + 2:pos + 2 + int(attr_len)]
+            print("%s: %s" % (token, attr))
 
             if token == 'call':
                 self.set_call(attr)
@@ -262,7 +263,7 @@ class wsjtx_to_n3fjp:
     def get_points(self):
         mult = 1
 
-        switcher = { 
+        switcher = {
             'FT4':    2,
             'FT8':    2,
             'DATA':   2,
@@ -277,7 +278,7 @@ class wsjtx_to_n3fjp:
             'MFSK':   2,
             'PSK':    2,
             'PSK31':  2
-        } 
+        }
         mult = mult * switcher.get(self.mode, 1)
 
         if self.power == 0:
@@ -292,62 +293,68 @@ class wsjtx_to_n3fjp:
         return mult
 
     def tcp_send_string(self, str):
-       # print ("Length to send: %d" % len(str) )
-       totalSent = 0
-       while totalSent < len(str):
-         # print ("Sending...")
-         bytesSent = self.sock.send(str.encode())
-         if bytesSent == 0:
-           raise RuntimeError("socket connection broken")
-         totalSent = totalSent + bytesSent
+        # print ("Length to send: %d" % len(str) )
+        totalSent = 0
+        while totalSent < len(str):
+            # print ("Sending...")
+            bytesSent = self.sock.send(str.encode())
+            if bytesSent == 0:
+                raise RuntimeError("socket connection broken")
+            totalSent = totalSent + bytesSent
 
     def tcp_recv_string(self):
-       chunks = []
-       totalRecv = 0
-       bFinished = 0
-       while bFinished == 0:
-         print ("Receiving...")
-         chunk = self.sock.recvfrom(1024)
-         print ("Received: %s" % chunk)
-         if chunk == b'':
-           raise RuntimeError("socket connection broken")
-         chunks.append(chunk)
-         totalRecv = totalRecv + len(chunk)
-       return b''.join(chunks)
+        chunks = []
+        totalRecv = 0
+        bFinished = 0
+        while bFinished == 0:
+            print("Receiving...")
+            chunk = self.sock.recvfrom(1024)
+            print("Received: %s" % chunk)
+            if chunk == b'':
+                raise RuntimeError("socket connection broken")
+            chunks.append(chunk)
+            totalRecv = totalRecv + len(chunk)
+        return b''.join(chunks)
 
     def udp_recv_string(self):
         try:
             self.recv_buffer = ""
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.bind((self.config['DEFAULT']['WSJT_X_HOST'], int(self.config['DEFAULT']['WSJT_X_PORT'])))
-            print ("Waiting for new log entry...")
+            sock.bind((self.config['DEFAULT']['WSJT_X_HOST'], int(
+                self.config['DEFAULT']['WSJT_X_PORT'])))
+            print("Waiting for new log entry...")
             self.recv_buffer = sock.recvfrom(1024)
-            print ("Received log message:\n\n", self.recv_buffer)
+            print("Received log message:\n\n", self.recv_buffer)
         except KeyboardInterrupt:
             sys.stderr.write("User cancelled.")
-            sock.close ()
+            sock.close()
             sys.exit(0)
         except socket.error as msg:
-            sys.stderr.write("[ERROR] %s (is another copy of wsjtx_to_n3fjp running?)\n" % msg)
+            sys.stderr.write(
+                "[ERROR] %s (is another copy of wsjtx_to_n3fjp running?)\n" % msg)
             sys.exit(2)
 
     def log_new_qso(self):
         if self.contest == 'FD':
-            command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
+            command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (
+                self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
         else:
-            command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
-        print ("\nSending log entry to N3FJP...")
-        print (command)
+            command = "<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES><STAYOPEN>TRUE</STAYOPEN><fldComputerName>%s</fldComputerName><fldOperator>%s</fldOperator><fldNameS>%s</fldNameS><fldInitials>%s</fldInitials><fldCountyS>%s</fldCountyS><fldCall>%s</fldCall><fldNameR>%s</fldNameR><fldDateStr>%s</fldDateStr><fldTimeOnStr>%s</fldTimeOnStr><fldTimeOffStr>%s</fldTimeOffStr><fldBand>%s</fldBand><fldMode>%s</fldMode><fldFrequency>%s</fldFrequency><fldPower>%s</fldPower><fldRstR>%s</fldRstR><fldRstS>%s</fldRstS><fldGridR>%s</fldGridR><fldGridS>%s</fldGridS><fldComments>%s</fldComments><fldPoints>%s</fldPoints><fldClass>%s</fldClass><fldSection>%s</fldSection></CMD>\r\n" % (
+                self.computer_name, self.operator, self.name_s, self.initials, self.county, self.call, self.name_r,  self.date, self.time_on, self.time_off, self.band, self.mode, self.frequency, self.power, self.rst_r, self.rst_s, self.grid_r, self.grid_s, self.comments, self.points, self.arrl_class_r, self.arrl_section_r)
+        print("\nSending log entry to N3FJP...")
+        print(command)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'], int(self.config['DEFAULT']['N3FJP_PORT'])))
+            self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'], int(
+                self.config['DEFAULT']['N3FJP_PORT'])))
             self.tcp_send_string(command)
             time.sleep(.2)
             command = "<CMD><CHECKLOG></CMD>\r\n"
-            print ("Sending log refresh...")
+            print("Sending log refresh...")
             self.tcp_send_string(command)
         except socket.error as msg:
             sys.stderr.write("[ERROR] Failed to connect to N3FJP: %s\n" % msg)
+
 
 if __name__ == "__main__":
     w = wsjtx_to_n3fjp()
@@ -357,4 +364,4 @@ if __name__ == "__main__":
         w.set_points(w.get_points())
         w.log_new_qso()
         w.reset_vals()
-    w.sock.close ()
+    w.sock.close()
