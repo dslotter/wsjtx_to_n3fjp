@@ -113,7 +113,6 @@ class wsjtx_to_n3fjp:
                 break
 #            print ( "Pos: %d End: %d Str: %s" % ( start , end, strbuf[start:end+1]) )
             pos = end + 2
-            num_begin = strbuf[pos]
             bFoundNum = True
             while bFoundNum:
                 if strbuf[pos + 1].isdigit():
