@@ -161,6 +161,7 @@ class wsjtx_to_n3fjp:
 
     def get_points(self):
         mult = 1
+        power = int(self.power)
 
         switcher = {
             'FT4':    2,
@@ -180,13 +181,13 @@ class wsjtx_to_n3fjp:
         }
         mult = mult * switcher.get(self.mode, 1)
 
-        if self.power == 0:
+        if power == 0:
             mult = mult * 1
-        elif self.power <= 5:
+        elif power <= 5:
             mult = mult * 5
-        elif self.power <= 150:
+        elif power <= 150:
             mult = mult * 2
-        elif self.power >= 150:
+        elif power >= 150:
             mult = mult * 1
 
         return mult
