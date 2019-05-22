@@ -239,7 +239,7 @@ class wsjtx_to_n3fjp:
         self.frequency = frequency
 
     def set_power(self, power):
-        self.power = int(power)
+        self.power = float(power)
 
     def set_rst_r(self, rst_r):
         self.rst_r = rst_r
