@@ -14,6 +14,7 @@ import sys
 import time
 import configparser
 
+
 class WsjtxToN3fjp:
     """ Class WsjtxToN3fjp """
     # pylint: disable=too-many-instance-attributes
@@ -87,32 +88,17 @@ class WsjtxToN3fjp:
         # It's a parser after all
         print("\nParsing log entry from WSJT-X...\n")
         for token in [
-                'call',
-                'gridsquare',
-                'mode',
-                'rst_sent',
-                'rst_rcvd',
-                'qso_date',
-                'time_on',
-                'qso_date_off',
-                'time_off',
-                'band',
-                'freq',
-                'station_callsign',
-                'my_gridsquare',
-                'tx_pwr',
-                'comment',
-                'name',
-                'operator',
-                'stx',
-                'srx',
-                'state']:
+                'call', 'gridsquare', 'mode', 'rst_sent', 'rst_rcvd',
+                'qso_date', 'time_on', 'qso_date_off', 'time_off', 'band',
+                'freq', 'station_callsign', 'my_gridsquare', 'tx_pwr',
+                'comment', 'name', 'operator', 'stx', 'srx', 'state'
+        ]:
             strbuf = str(self.recv_buffer)
             search_token = "<" + token + ":"
             start = strbuf.lower().find(search_token)
             if start == -1:
                 continue
-            end = strbuf.find(':', start)-1
+            end = strbuf.find(':', start) - 1
             if end == -1:
                 break
             pos = end + 2
@@ -125,7 +111,7 @@ class WsjtxToN3fjp:
 
             attr_len = int(strbuf[end + 2:pos + 1])
             strbuf = str(self.recv_buffer)
-            attr = strbuf[pos + 2:pos+2 + int(attr_len)]
+            attr = strbuf[pos + 2:pos + 2 + int(attr_len)]
             print("%s: %s" % (token, attr))
 
             if token == 'call':
@@ -150,6 +136,8 @@ class WsjtxToN3fjp:
             elif token == 'time_on':
                 time_on = attr[0:2] + ':' + attr[2:4]
                 self.__set_time_on(time_on)
+
+
 #            elif token == 'qso_date_off':
 #                self.__set_date_off(attr)
             elif token == 'time_off':
@@ -262,20 +250,20 @@ class WsjtxToN3fjp:
         mult = 1
 
         switcher = {
-            'FT4':    2,
-            'FT8':    2,
-            'DATA':   2,
-            'RTTY':   2,
-            'JT4':    2,
-            'JT9':    2,
-            'JT65':   2,
-            'QRA64':  2,
-            'ISCAT':  2,
+            'FT4': 2,
+            'FT8': 2,
+            'DATA': 2,
+            'RTTY': 2,
+            'JT4': 2,
+            'JT9': 2,
+            'JT65': 2,
+            'QRA64': 2,
+            'ISCAT': 2,
             'MSK144': 2,
-            'WSPR':   2,
-            'MFSK':   2,
-            'PSK':    2,
-            'PSK31':  2
+            'WSPR': 2,
+            'MFSK': 2,
+            'PSK': 2,
+            'PSK31': 2
         }
         mult = mult * switcher.get(self.mode, 1)
 
@@ -329,7 +317,9 @@ class WsjtxToN3fjp:
             sock.close()
             sys.exit(0)
         except socket.error as msg:
-            sys.stderr.write("[ERROR] %s (is another copy of wsjtx_to_n3fjp running?)\n" % msg)
+            sys.stderr.write(
+                "[ERROR] %s (is another copy of wsjtx_to_n3fjp running?)\n" %
+                msg)
             sys.exit(2)
 
     def log_new_qso(self):
@@ -356,27 +346,17 @@ class WsjtxToN3fjp:
 <fldComments>%s</fldComments>
 <fldPoints>%s</fldPoints>
 <fldClass>%s</fldClass>
-<fldSection>%s</fldSection></CMD>\r\n""" %\
-                      (self.computer_name,\
-                       self.operator,\
-                       self.name_s,\
-                       self.initials,\
-                       self.county,\
-                       self.call,\
-                       self.name_r,\
-                       self.date,\
-                       self.time_on,\
-                       self.time_off,\
-                       self.band,\
-                       self.mode,\
-                       self.frequency,\
-                       self.power,\
-                       self.grid_r,\
-                       self.grid_s,\
-                       self.comments,\
-                       self.points,\
-                       self.arrl_class_r,\
-                       self.arrl_section_r)
+<fldSection>%s</fldSection></CMD>\r\n""" % (self.computer_name, self.operator,
+                                            self.name_s, self.initials,
+                                            self.county, self.call,
+                                            self.name_r, self.date,
+                                            self.time_on, self.time_off,
+                                            self.band, self.mode,
+                                            self.frequency, self.power,
+                                            self.grid_r, self.grid_s,
+                                            self.comments, self.points,
+                                            self.arrl_class_r,
+                                            self.arrl_section_r)
         else:
             command = """<CMD><ADDDIRECT><EXCLUDEDUPES>TRUE</EXCLUDEDUPES>
 <STAYOPEN>TRUE</STAYOPEN>
@@ -401,29 +381,18 @@ class WsjtxToN3fjp:
 <fldComments>%s</fldComments>
 <fldPoints>%s</fldPoints>
 <fldClass>%s</fldClass>
-<fldSection>%s</fldSection></CMD>\r\n""" %\
-                      (self.computer_name,\
-                       self.operator,\
-                       self.name_s,\
-                       self.initials,\
-                       self.county,\
-                       self.call,\
-                       self.name_r,\
-                       self.date,\
-                       self.time_on,\
-                       self.time_off,\
-                       self.band,\
-                       self.mode,\
-                       self.frequency,\
-                       self.power,\
-                       self.rst_r,\
-                       self.rst_s,\
-                       self.grid_r,\
-                       self.grid_s,\
-                       self.comments,\
-                       self.points,\
-                       self.arrl_class_r,\
-                       self.arrl_section_r)
+<fldSection>%s</fldSection></CMD>\r\n""" % (self.computer_name, self.operator,
+                                            self.name_s, self.initials,
+                                            self.county, self.call,
+                                            self.name_r, self.date,
+                                            self.time_on, self.time_off,
+                                            self.band, self.mode,
+                                            self.frequency, self.power,
+                                            self.rst_r, self.rst_s,
+                                            self.grid_r, self.grid_s,
+                                            self.comments, self.points,
+                                            self.arrl_class_r,
+                                            self.arrl_section_r)
         print("\nSending log entry to N3FJP...")
         print(command)
         try:
@@ -436,6 +405,7 @@ class WsjtxToN3fjp:
             self.tcp_send_string(command)
         except socket.error as msg:
             sys.stderr.write("[ERROR] Failed to connect to N3FJP: %s\n" % msg)
+
 
 if __name__ == "__main__":
     W = WsjtxToN3fjp()
