@@ -202,29 +202,14 @@ class WsjtxToN3fjp:
 
         return mult
 
-    def tcp_send_string(self, send_str):
+    def tcp_send_string(self, sock, send_str):
         """ Send text string over TCP socket """
         total_sent = 0
         while total_sent < len(send_str):
-            bytes_sent = self.sock.send(send_str.encode())
+            bytes_sent = sock.send(send_str.encode())
             if bytes_sent == 0:
                 raise RuntimeError("socket connection broken")
             total_sent = total_sent + bytes_sent
-
-    def tcp_recv_string(self):
-        """ Receive text string over TCP socket """
-        chunks = []
-        total_recv = 0
-        finished = 0
-        while finished == 0:
-            print("Receiving...")
-            chunk = self.sock.recvfrom(1024)
-            print("Received: %s" % chunk)
-            if chunk == b'':
-                raise RuntimeError("socket connection broken")
-            chunks.append(chunk)
-            total_recv = total_recv + len(chunk)
-        return b''.join(chunks)
 
     def udp_recv_string(self):
         """ Receive text string over UDP socket """
@@ -320,13 +305,15 @@ class WsjtxToN3fjp:
         print("\nSending log entry to N3FJP...")
         print(command)
         try:
-            self.sock.connect((self.config['DEFAULT']['N3FJP_HOST'],
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((self.config['DEFAULT']['N3FJP_HOST'],
                                int(self.config['DEFAULT']['N3FJP_PORT'])))
-            self.tcp_send_string(command)
+            self.tcp_send_string(sock, command)
             time.sleep(.2)
             command = "<CMD><CHECKLOG></CMD>\r\n"
             print("Sending log refresh...")
-            self.tcp_send_string(command)
+            self.tcp_send_string(sock, command)
+            sock.close()
         except socket.error as msg:
             sys.stderr.write("[ERROR] Failed to connect to N3FJP: %s\n" % msg)
 
