@@ -16,3 +16,6 @@ echo "<call:4>WABC <gridsquare:4>EM83 <mode:3>FT4 <rst_sent:0> <rst_rcvd:0> <qso
 # Test fractional power
 echo "<call:8>W4TSTNUM <gridsquare:0> <mode:3>FT8 <rst_sent:0> <rst_rcvd:0> <qso_date:8>20190515 <time_on:6>004048 <qso_date_off:8>20190515 <time_off:6>004048 <band:3>40m <freq:8>7.075000 <station_callsign:5>W3DJS <my_gridsquare:6>EM83bx <tx_pwr:4>50.1 <comment:3>FT8 <eor>" | nc -q 1 -u 127.0.0.1 2333
 
+# Test Field Day
+echo "<call:4>NF4DY <gridsquare:4>EN74 <mode:3>FT8 <rst_sent:0> <rst_rcvd:0> <qso_date:8>20200617 <time_on:6>154711 <qso_date_off:8>20200617 <time_off:6>154711 <band:3>40m <freq:8>7.075900 <station_callsign:5>W3DJS <my_gridsquare:6>EM83BX <comment:3>FT8 <operator:5>W3DJS <contest_id:14>ARRL-FIELD-DAY <SRX_STRING:5>1D MI <class:2>1D <arrl_sect:2>MI <eor>" | nc -q 1 -u 127.0.0.1 2333
+
