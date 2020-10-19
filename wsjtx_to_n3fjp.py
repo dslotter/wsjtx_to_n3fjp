@@ -91,8 +91,7 @@ class WsjtxToN3fjp:
                 'call', 'gridsquare', 'mode', 'rst_sent', 'rst_rcvd',
                 'qso_date', 'time_on', 'qso_date_off', 'time_off', 'band',
                 'freq', 'station_callsign', 'my_gridsquare', 'tx_pwr',
-                'comment', 'name', 'operator', 'stx', 'srx', 'state',
-		'class', 'arrl_sect'
+                'comment', 'name', 'operator', 'stx', 'srx', 'state'
         ]:
             strbuf = str(self.recv_buffer)
             search_token = "<" + token + ":"
@@ -114,6 +113,8 @@ class WsjtxToN3fjp:
             strbuf = str(self.recv_buffer)
             attr = strbuf[pos + 2:pos + 2 + int(attr_len)]
             print("%s: %s" % (token, attr))
+            if not attr:
+              continue
 
             if token == 'call':
                 self.call = attr
@@ -126,12 +127,11 @@ class WsjtxToN3fjp:
                     self.arrl_class_s = attr
                 else:
                     self.rst_s = attr
-            elif token == 'class':
-                    self.arrl_class_r = attr
-            elif token == 'arrl_sect':
-                    self.arrl_section_r = attr
             elif token == 'rst_rcvd':
-                self.rst_r = attr
+                if self.contest == 'FD':
+                    self.arrl_class_r = attr
+                else:
+                    self.rst_r = attr
             elif token == 'qso_date':
                 date = attr[0:4] + '/' + attr[4:6] + '/' + attr[6:8]
                 self.date = date
@@ -311,7 +311,7 @@ class WsjtxToN3fjp:
             sock.connect((self.config['DEFAULT']['N3FJP_HOST'],
                                int(self.config['DEFAULT']['N3FJP_PORT'])))
             self.tcp_send_string(sock, command)
-            time.sleep(.5)
+            time.sleep(.2)
             command = "<CMD><CHECKLOG></CMD>\r\n"
             print("Sending log refresh...")
             self.tcp_send_string(sock, command)
